@@ -1,4 +1,4 @@
-use blockscan_api_wrapper::app::App;
+use trolley::app::App;
 use loco_rs::testing;
 use serial_test::serial;
 
