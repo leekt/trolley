@@ -1,11 +1,16 @@
+use crate::{config::get_supported_networks, controllers::eth::*};
 use async_trait::async_trait;
-use loco_rs::{
-    Result,
-    prelude::Routes, controller::AppRoutes, boot::{StartMode, BootResult, create_app}, worker::Processor, app::AppContext, task::Tasks
-};
 use loco_rs::app::Hooks;
-use crate::{controllers::eth::*, config::get_supported_networks};
-
+use loco_rs::{
+    app::AppContext,
+    boot::{create_app, BootResult, StartMode},
+    controller::AppRoutes,
+    prelude::Routes,
+    task::Tasks,
+    worker::Processor,
+    Result,
+};
+use tracing::debug;
 
 pub struct App;
 #[async_trait]
@@ -30,15 +35,14 @@ impl Hooks for App {
 
     fn routes() -> AppRoutes {
         AppRoutes::empty().add_routes({
-            let mut routes : Vec<Routes> = vec![];
+            let mut routes: Vec<Routes> = vec![];
             get_supported_networks().iter().for_each(|scanner| {
-                match get_api_key(scanner.to_owned())
-                {
-                    Ok(_) => {},
+                match get_api_key(scanner.to_owned()) {
+                    Ok(_) => {}
                     Err(_) => {
-                        print!("{} api key not found\n", scanner.chain_name);
-                        return
-                    }, // skip if api key not found
+                        debug!("{} api key not found\n", scanner.chain_name);
+                        return;
+                    } // skip if api key not found
                 }
                 routes.push(scanner_routes(scanner.clone()));
             });
@@ -50,4 +54,3 @@ impl Hooks for App {
 
     fn register_tasks(_tasks: &mut Tasks) {}
 }
-

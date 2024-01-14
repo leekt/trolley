@@ -1,6 +1,6 @@
-use trolley::app::App;
 use loco_rs::testing;
 use serial_test::serial;
+use trolley::app::App;
 
 #[tokio::test]
 #[serial]
